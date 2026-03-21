@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Document/page shape -->
+  <path d="M6 2 h14 l6 6 v20 a2 2 0 0 1 -2 2 H8 a2 2 0 0 1 -2 -2 V2 Z" fill="#1e293b"/>
+  <!-- Folded corner -->
+  <path d="M20 2 v6 h6" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Cross motif -->
+  <rect x="13" y="11" width="2" height="12" rx="0.5" fill="#D4AF37"/>
+  <rect x="9" y="15" width="10" height="2" rx="0.5" fill="#D4AF37"/>
+</svg>

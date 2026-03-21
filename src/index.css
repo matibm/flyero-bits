@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Custom scrollbar for sidebar */
 .custom-scrollbar::-webkit-scrollbar {
