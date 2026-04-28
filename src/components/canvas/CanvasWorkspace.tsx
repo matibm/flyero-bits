@@ -2,15 +2,9 @@ import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import EditorStage from './EditorStage';
 import type { EditorStageHandle } from './EditorStage';
+import { useEditorStore } from '../../store/useEditorStore';
 
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 1200;
-
-const ZOOM_STEPS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
-
-export interface CanvasWorkspaceHandle {
-  getStageRef: () => EditorStageHandle | null;
-}
+const ZOOM_STEPS = [0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
 
 const CanvasWorkspace: React.FC<{ stageRef: React.RefObject<EditorStageHandle | null> }> = ({
   stageRef,
@@ -20,24 +14,28 @@ const CanvasWorkspace: React.FC<{ stageRef: React.RefObject<EditorStageHandle | 
   const [manualZoom, setManualZoom] = useState<number | null>(null);
   const [fontsReady, setFontsReady] = useState(false);
 
+  const canvas = useEditorStore((s) => s.canvasSize);
+  const snapEnabled = useEditorStore((s) => s.snapEnabled);
+  const gridEnabled = useEditorStore((s) => s.gridEnabled);
+  const setSnapEnabled = useEditorStore((s) => s.setSnapEnabled);
+  const setGridEnabled = useEditorStore((s) => s.setGridEnabled);
+
   const scale = manualZoom ?? autoScale;
   const isAuto = manualZoom === null;
 
-  // Wait for web fonts before rendering canvas
   useEffect(() => {
     document.fonts.ready.then(() => setFontsReady(true));
   }, []);
 
-  // Responsive scale calculation
   const computeScale = useCallback(() => {
     if (!containerRef.current) return;
-    const padding = 60;
+    const padding = 80;
     const cw = containerRef.current.offsetWidth - padding;
     const ch = containerRef.current.offsetHeight - padding;
-    const sx = cw / CANVAS_WIDTH;
-    const sy = ch / CANVAS_HEIGHT;
-    setAutoScale(Math.min(sx, sy, 1)); // never scale above 1
-  }, []);
+    const sx = cw / canvas.width;
+    const sy = ch / canvas.height;
+    setAutoScale(Math.max(0.05, Math.min(sx, sy, 1)));
+  }, [canvas.width, canvas.height]);
 
   useEffect(() => {
     computeScale();
@@ -45,9 +43,7 @@ const CanvasWorkspace: React.FC<{ stageRef: React.RefObject<EditorStageHandle | 
     return () => window.removeEventListener('resize', computeScale);
   }, [computeScale]);
 
-  // Zoom handlers
   const currentStepIndex = useMemo(() => {
-    // Find the closest zoom step to the current scale
     let closest = 0;
     let minDiff = Math.abs(ZOOM_STEPS[0] - scale);
     for (let i = 1; i < ZOOM_STEPS.length; i++) {
@@ -70,9 +66,7 @@ const CanvasWorkspace: React.FC<{ stageRef: React.RefObject<EditorStageHandle | 
     setManualZoom(ZOOM_STEPS[nextIndex]);
   }, [currentStepIndex]);
 
-  const handleResetZoom = useCallback(() => {
-    setManualZoom(null);
-  }, []);
+  const handleResetZoom = useCallback(() => setManualZoom(null), []);
 
   return (
     <div
@@ -88,8 +82,8 @@ const CanvasWorkspace: React.FC<{ stageRef: React.RefObject<EditorStageHandle | 
         <EditorStage ref={stageRef} scale={scale} />
       )}
 
-      {/* Zoom toolbar */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur text-white rounded-full flex items-center gap-1 px-2 py-1.5 shadow-lg">
+      {/* Zoom + tools toolbar */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur text-white rounded-full flex items-center gap-1 px-2 py-1.5 shadow-lg">
         <button
           onClick={handleZoomOut}
           disabled={currentStepIndex === 0}
@@ -98,7 +92,6 @@ const CanvasWorkspace: React.FC<{ stageRef: React.RefObject<EditorStageHandle | 
         >
           <Minus size={14} />
         </button>
-
         <button
           onClick={handleResetZoom}
           className="px-2.5 py-0.5 text-xs font-medium min-w-[56px] text-center rounded-full hover:bg-white/15 transition-colors cursor-pointer"
@@ -106,7 +99,6 @@ const CanvasWorkspace: React.FC<{ stageRef: React.RefObject<EditorStageHandle | 
         >
           {Math.round(scale * 100)}%
         </button>
-
         <button
           onClick={handleZoomIn}
           disabled={currentStepIndex === ZOOM_STEPS.length - 1}
@@ -115,7 +107,6 @@ const CanvasWorkspace: React.FC<{ stageRef: React.RefObject<EditorStageHandle | 
         >
           <Plus size={14} />
         </button>
-
         {!isAuto && (
           <button
             onClick={handleResetZoom}
@@ -125,6 +116,29 @@ const CanvasWorkspace: React.FC<{ stageRef: React.RefObject<EditorStageHandle | 
             Auto
           </button>
         )}
+        <span className="mx-2 h-5 w-px bg-white/20" />
+        <button
+          onClick={() => setSnapEnabled(!snapEnabled)}
+          className={`px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide rounded-full transition-colors cursor-pointer ${
+            snapEnabled ? 'bg-pink-500/80 text-white' : 'hover:bg-white/15 text-white/70'
+          }`}
+          title="Guías inteligentes (snap)"
+        >
+          Snap
+        </button>
+        <button
+          onClick={() => setGridEnabled(!gridEnabled)}
+          className={`px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide rounded-full transition-colors cursor-pointer ${
+            gridEnabled ? 'bg-sky-500/80 text-white' : 'hover:bg-white/15 text-white/70'
+          }`}
+          title="Cuadrícula"
+        >
+          Grilla
+        </button>
+        <span className="mx-2 h-5 w-px bg-white/20" />
+        <span className="px-2 text-[10px] text-white/60 font-mono">
+          {canvas.width}×{canvas.height}
+        </span>
       </div>
     </div>
   );

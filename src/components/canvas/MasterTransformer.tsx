@@ -8,41 +8,28 @@ interface MasterTransformerProps {
 }
 
 const MasterTransformer: React.FC<MasterTransformerProps> = ({ stageRef }) => {
-  const selectedNodeId = useEditorStore((s) => s.selectedNodeId);
+  const selectedIds = useEditorStore((s) => s.selectedNodeIds);
   const transformerRef = useRef<Konva.Transformer>(null);
 
   useEffect(() => {
     if (!transformerRef.current || !stageRef.current) return;
+    const stage = stageRef.current;
 
-    if (selectedNodeId) {
-      // Find the node in the stage by its ID
-      const stage = stageRef.current;
-      const selectedNode = stage.findOne(`#${selectedNodeId}`);
+    const nodes = selectedIds
+      .map((id) => stage.findOne(`#${id}`))
+      .filter((n): n is Konva.Node => Boolean(n));
 
-      if (selectedNode) {
-        transformerRef.current.nodes([selectedNode]);
-      } else {
-        transformerRef.current.nodes([]);
-      }
-    } else {
-      transformerRef.current.nodes([]);
-    }
-
-    // Force a redraw of the layer containing the transformer
+    transformerRef.current.nodes(nodes);
     transformerRef.current.getLayer()?.batchDraw();
-  }, [selectedNodeId, stageRef]);
+  }, [selectedIds, stageRef]);
 
-  // Keep transformer visible but hidden if no node selected
-  if (!selectedNodeId) return null;
+  if (selectedIds.length === 0) return null;
 
   return (
     <Transformer
       ref={transformerRef}
       boundBoxFunc={(oldBox, newBox) => {
-        // Minimum size constraint
-        if (Math.abs(newBox.width) < 30 || Math.abs(newBox.height) < 30) {
-          return oldBox;
-        }
+        if (Math.abs(newBox.width) < 20 || Math.abs(newBox.height) < 20) return oldBox;
         return newBox;
       }}
       borderStroke="#0ea5e9"
@@ -52,6 +39,7 @@ const MasterTransformer: React.FC<MasterTransformerProps> = ({ stageRef }) => {
       anchorSize={10}
       anchorCornerRadius={5}
       padding={4}
+      rotateAnchorOffset={28}
     />
   );
 };

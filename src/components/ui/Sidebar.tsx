@@ -7,6 +7,10 @@ import ResetButton from './ResetButton';
 import TemplateSelector from './TemplateSelector';
 import TextPropertiesPanel from './TextPropertiesPanel';
 import BgOverlayControls from './BgOverlayControls';
+import CanvasSizeSelector from './CanvasSizeSelector';
+import LayersPanel from './LayersPanel';
+import ImagesPanel from './ImagesPanel';
+import FontsPanel from './FontsPanel';
 import type { EditorStageHandle } from '../canvas/EditorStage';
 
 interface SidebarProps {
@@ -28,14 +32,12 @@ const MESES = [
   'Diciembre',
 ];
 
-/** Formats an ISO date (YYYY-MM-DD) to Spanish: "12 de Mayo de 1945" */
 const formatDateToSpanish = (iso: string): string => {
   const [year, month, day] = iso.split('-').map(Number);
   if (!year || !month || !day) return iso;
   return `${day} de ${MESES[month - 1]} de ${year}`;
 };
 
-/** Tries to parse a Spanish date string back to ISO (YYYY-MM-DD) */
 const parseSpanishToISO = (spanish: string): string => {
   const match = spanish.match(/(\d{1,2}) de (\w+) de (\d{4})/);
   if (!match) return '';
@@ -58,12 +60,10 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!file.type.startsWith('image/')) {
       toast.error('El archivo seleccionado no es una imagen válida.');
       return;
     }
-
     const blobUrl = URL.createObjectURL(file);
     setData({ foto_url: blobUrl });
     setSelectedNodeId('foto_difunto');
@@ -74,12 +74,10 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
   const handleBackgroundUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!file.type.startsWith('image/')) {
       toast.error('El archivo seleccionado no es una imagen válida.');
       return;
     }
-
     const blobUrl = URL.createObjectURL(file);
     setCustomBackground(blobUrl);
     setSelectedNodeId(null);
@@ -91,7 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
     'w-full text-sm p-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sky-500/40 focus:border-sky-400 outline-none transition-all duration-150 bg-white';
 
   return (
-    <div className="w-[380px] bg-gray-50 border-r border-gray-200 flex flex-col h-screen overflow-hidden">
+    <div className="w-[400px] bg-gray-50 border-r border-gray-200 flex flex-col h-screen overflow-hidden">
       {/* Header */}
       <div className="p-5 border-b border-gray-200 bg-white flex items-center gap-3">
         <div className="bg-gradient-to-br from-slate-800 to-slate-950 p-2.5 rounded-xl text-white shadow-md shadow-slate-800/20">
@@ -101,27 +99,26 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
           <h1 className="text-lg font-bold text-gray-900 leading-tight tracking-tight">
             Flyer Obits
           </h1>
-          <p className="text-[11px] text-gray-400 font-medium">Generador de Alta Resolución</p>
+          <p className="text-[11px] text-gray-400 font-medium">Editor profesional</p>
         </div>
         <ResetButton />
       </div>
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
-        {/* Template Selector */}
+        <CanvasSizeSelector />
         <TemplateSelector />
-
-        {/* Dynamic Text Properties (only visible when text is selected) */}
         <TextPropertiesPanel />
-
-        {/* Background Overlay Controls */}
+        <LayersPanel />
+        <ImagesPanel />
+        <FontsPanel />
         <BgOverlayControls />
 
         {/* Background Upload */}
         <section>
-          <SectionTitle icon={<ImageIcon size={14} />} title="Fondo Personalizado" />
+          <SectionTitle icon={<ImageIcon size={14} />} title="Fondo personalizado" />
           <div
-            className={`border-2 border-dashed rounded-xl p-5 text-center transition-all duration-200 cursor-pointer relative group ${
+            className={`border-2 border-dashed rounded-xl p-4 text-center transition-all duration-200 cursor-pointer relative group ${
               bgLoaded
                 ? 'border-emerald-300 bg-emerald-50/50'
                 : 'border-gray-200 hover:bg-white hover:border-sky-300'
@@ -134,11 +131,11 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             {bgLoaded ? (
-              <CheckCircle2 className="mx-auto text-emerald-500 mb-2" size={24} />
+              <CheckCircle2 className="mx-auto text-emerald-500 mb-2" size={22} />
             ) : (
               <Upload
                 className="mx-auto text-gray-400 mb-2 group-hover:text-sky-500 transition-colors"
-                size={24}
+                size={22}
               />
             )}
             <p
@@ -146,19 +143,19 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
                 bgLoaded ? 'text-emerald-700' : 'text-gray-700 group-hover:text-sky-600'
               }`}
             >
-              {bgLoaded ? 'Fondo cargado' : 'Subir nuevo fondo'}
+              {bgLoaded ? 'Fondo cargado' : 'Subir fondo'}
             </p>
-            <p className="text-xs text-gray-400 mt-1">
-              {bgLoaded ? 'Haz clic para reemplazar' : 'Reemplaza el diseño'}
+            <p className="text-[11px] text-gray-400 mt-0.5">
+              {bgLoaded ? 'Clic para reemplazar' : 'Reemplaza el diseño base'}
             </p>
           </div>
         </section>
 
         {/* Photo Upload */}
         <section>
-          <SectionTitle icon={<ImageIcon size={14} />} title="Fotografía" />
+          <SectionTitle icon={<ImageIcon size={14} />} title="Fotografía del difunto" />
           <div
-            className={`border-2 border-dashed rounded-xl p-5 text-center transition-all duration-200 cursor-pointer relative group ${
+            className={`border-2 border-dashed rounded-xl p-4 text-center transition-all duration-200 cursor-pointer relative group ${
               photoLoaded
                 ? 'border-emerald-300 bg-emerald-50/50'
                 : 'border-gray-200 hover:bg-white hover:border-sky-300'
@@ -171,11 +168,11 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             {photoLoaded ? (
-              <CheckCircle2 className="mx-auto text-emerald-500 mb-2" size={24} />
+              <CheckCircle2 className="mx-auto text-emerald-500 mb-2" size={22} />
             ) : (
               <Upload
                 className="mx-auto text-gray-400 mb-2 group-hover:text-sky-500 transition-colors"
-                size={24}
+                size={22}
               />
             )}
             <p
@@ -183,20 +180,17 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
                 photoLoaded ? 'text-emerald-700' : 'text-gray-700 group-hover:text-sky-600'
               }`}
             >
-              {photoLoaded ? 'Foto cargada' : 'Subir nueva foto'}
+              {photoLoaded ? 'Foto cargada' : 'Subir foto'}
             </p>
-            <p className="text-xs text-gray-400 mt-1">
-              {photoLoaded ? 'Haz clic para reemplazar' : 'Arrastra o haz clic (JPG, PNG)'}
+            <p className="text-[11px] text-gray-400 mt-0.5">
+              {photoLoaded ? 'Clic para reemplazar' : 'JPG, PNG'}
             </p>
           </div>
-          <p className="text-xs text-amber-700 mt-2.5 bg-amber-50 p-2.5 rounded-lg border border-amber-100">
-            💡 Haz clic en la foto dentro del editor para moverla o cambiar su tamaño.
-          </p>
         </section>
 
         {/* Personal Data */}
         <section>
-          <SectionTitle icon={<Type size={14} />} title="Datos Personales" />
+          <SectionTitle icon={<Type size={14} />} title="Datos personales" />
           <div className="space-y-3">
             <Field label="Nombres">
               <input
@@ -215,7 +209,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
               />
             </Field>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Nacimiento">
+              <Field label="(*) Nacimiento">
                 <input
                   type="date"
                   value={parseSpanishToISO(data.fecha_nacimiento)}
@@ -225,7 +219,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
                   className={inputBase}
                 />
               </Field>
-              <Field label="Fallecimiento">
+              <Field label="(†) Fallecimiento">
                 <input
                   type="date"
                   value={parseSpanishToISO(data.fecha_fallecimiento)}
@@ -249,9 +243,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
                 placeholder="Lugar"
                 value={data.velatorio.lugar}
                 onChange={(e) =>
-                  setData({
-                    velatorio: { ...data.velatorio, lugar: e.target.value },
-                  })
+                  setData({ velatorio: { ...data.velatorio, lugar: e.target.value } })
                 }
                 className={`${inputBase} mb-2`}
               />
@@ -261,10 +253,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
                 value={data.velatorio.direccion}
                 onChange={(e) =>
                   setData({
-                    velatorio: {
-                      ...data.velatorio,
-                      direccion: e.target.value,
-                    },
+                    velatorio: { ...data.velatorio, direccion: e.target.value },
                   })
                 }
                 className={inputBase}
@@ -276,11 +265,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
                 type="text"
                 placeholder="Lugar"
                 value={data.sepelio.lugar}
-                onChange={(e) =>
-                  setData({
-                    sepelio: { ...data.sepelio, lugar: e.target.value },
-                  })
-                }
+                onChange={(e) => setData({ sepelio: { ...data.sepelio, lugar: e.target.value } })}
                 className={`${inputBase} mb-2`}
               />
               <div className="grid grid-cols-2 gap-2">
@@ -296,9 +281,6 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
                 />
                 <input
                   type="time"
-                  value={data.sepelio.hora.replace(/\s*(AM|PM)/i, (_, p) =>
-                    p.toUpperCase() === 'AM' ? '' : '',
-                  )}
                   onChange={(e) => {
                     const [h, m] = e.target.value.split(':').map(Number);
                     const ampm = h >= 12 ? 'PM' : 'AM';
@@ -319,7 +301,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
 
         {/* Dedication */}
         <section>
-          <SectionTitle icon={<Type size={14} />} title="Frase Dedicatoria" />
+          <SectionTitle icon={<Type size={14} />} title="Frase dedicatoria" />
           <textarea
             rows={3}
             value={data.frase_dedicatoria}
@@ -337,31 +319,23 @@ const Sidebar: React.FC<SidebarProps> = ({ stageRef }) => {
   );
 };
 
-// ── Helper sub-components ────────────────────────────────────────────
-
-const SectionTitle: React.FC<{
-  icon: React.ReactNode;
-  title: string;
-}> = ({ icon, title }) => (
+const SectionTitle: React.FC<{ icon: React.ReactNode; title: string }> = ({ icon, title }) => (
   <h2 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
     {icon} {title}
   </h2>
 );
 
-const Field: React.FC<{
-  label: string;
-  children: React.ReactNode;
-}> = ({ label, children }) => (
+const Field: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div>
     <label className="block text-xs font-medium text-gray-600 mb-1.5">{label}</label>
     {children}
   </div>
 );
 
-const ServiceCard: React.FC<{
-  title: string;
-  children: React.ReactNode;
-}> = ({ title, children }) => (
+const ServiceCard: React.FC<{ title: string; children: React.ReactNode }> = ({
+  title,
+  children,
+}) => (
   <div className="p-3.5 bg-white rounded-xl border border-gray-100 shadow-sm">
     <label className="block text-xs font-semibold text-gray-800 mb-2.5">{title}</label>
     {children}

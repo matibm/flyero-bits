@@ -1,30 +1,34 @@
 import { useEditorStore } from '../../store/useEditorStore';
 import { AlignLeft, AlignCenter, AlignRight, Type, Bold, Italic } from 'lucide-react';
+import { CURATED_FONTS } from '../../data/fonts';
 import type { TextOverride, TextConfig } from '../../types';
 
-const AVAILABLE_FONTS = [
-  'Arial',
-  'Times New Roman',
-  'Georgia',
-  'Verdana',
-  'Courier New',
-  'Impact',
-  'Trebuchet MS',
-  'Oswald',
-  'Cinzel',
-];
-
 const TextPropertiesPanel: React.FC = () => {
-  const selectedNodeId = useEditorStore((s) => s.selectedNodeId);
+  const selectedIds = useEditorStore((s) => s.selectedNodeIds);
   const textOverrides = useEditorStore((s) => s.textOverrides);
   const updateTextOverride = useEditorStore((s) => s.updateTextOverride);
+  const customFonts = useEditorStore((s) => s.customFonts);
 
   const data = useEditorStore((s) => s.deceasedData);
   const template = useEditorStore((s) => s.activeTemplate);
   const m = template.mapeo_dinamico;
 
-  // Only show if a text node is selected (ids match what DynamicTexts uses)
-  const isTextSelected = typeof selectedNodeId === 'string' && selectedNodeId !== 'foto_difunto';
+  const selectedNodeId = selectedIds[0] ?? null;
+
+  // Heuristic: text node if id matches known text patterns
+  const isTextSelected =
+    typeof selectedNodeId === 'string' &&
+    (selectedNodeId.startsWith('fix_txt_') ||
+      [
+        'nombres',
+        'apellidos',
+        'fechas',
+        'velatorio_lugar',
+        'velatorio_direccion',
+        'sepelio_fecha_hora',
+        'sepelio_lugar',
+        'frase_dedicatoria',
+      ].includes(selectedNodeId));
 
   if (!isTextSelected || !selectedNodeId) return null;
 
@@ -44,7 +48,7 @@ const TextPropertiesPanel: React.FC = () => {
     baseIsBold = m.apellidos.fontStyle?.includes('bold') || false;
     baseIsItalic = m.apellidos.fontStyle?.includes('italic') || false;
   } else if (selectedNodeId === 'fechas') {
-    baseText = `${data.fecha_nacimiento}  —  ${data.fecha_fallecimiento}`;
+    baseText = `(*) ${data.fecha_nacimiento}    ${data.fecha_fallecimiento} (†)`;
     baseFont = m.fechas.fontFamily;
     baseIsBold = m.fechas.fontStyle?.includes('bold') || false;
     baseIsItalic = m.fechas.fontStyle?.includes('italic') || false;
@@ -87,16 +91,29 @@ const TextPropertiesPanel: React.FC = () => {
     updateTextOverride(selectedNodeId, updates);
   };
 
+  const allFontFamilies = [
+    ...new Set([
+      'Arial',
+      'Times New Roman',
+      'Georgia',
+      'Verdana',
+      'Courier New',
+      'Impact',
+      'Trebuchet MS',
+      ...CURATED_FONTS.map((f) => f.family),
+      ...customFonts.map((f) => f.family),
+    ]),
+  ];
+
   return (
     <div className="bg-sky-50/50 border border-sky-100 p-4 rounded-xl space-y-4 shadow-inner my-4">
       <h3 className="text-[11px] font-bold text-sky-700 uppercase tracking-wider flex items-center gap-2 mb-2">
-        <Type size={14} /> Editar Texto Seleccionado ({selectedNodeId})
+        <Type size={14} /> Editar texto · {selectedNodeId}
       </h3>
 
-      {/* Content Edit */}
       <div>
         <label className="block text-[10px] font-semibold text-gray-500 mb-1">
-          Contenido Manual
+          Contenido manual
         </label>
         <textarea
           value={currentText}
@@ -107,7 +124,6 @@ const TextPropertiesPanel: React.FC = () => {
         />
       </div>
 
-      {/* Font Family */}
       <div>
         <label className="block text-[10px] font-semibold text-gray-500 mb-1">Tipografía</label>
         <select
@@ -115,7 +131,7 @@ const TextPropertiesPanel: React.FC = () => {
           onChange={(e) => handleOverride({ fontFamily: e.target.value })}
           className="w-full text-sm p-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-sky-400 outline-none bg-white"
         >
-          {AVAILABLE_FONTS.map((font) => (
+          {allFontFamilies.map((font) => (
             <option key={font} value={font} style={{ fontFamily: font }}>
               {font}
             </option>
@@ -123,25 +139,23 @@ const TextPropertiesPanel: React.FC = () => {
         </select>
       </div>
 
-      {/* Typography Styles */}
       <div className="flex gap-2">
         <button
           onClick={() => handleOverride({ isBold: !currentIsBold })}
-          className={`flex-1 p-2 rounded-lg border flex justify-center items-center transition-colors ${currentIsBold ? 'bg-sky-100 border-sky-300 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+          className={`flex-1 p-2 rounded-lg border flex justify-center items-center transition-colors cursor-pointer ${currentIsBold ? 'bg-sky-100 border-sky-300 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
           title="Negrita"
         >
           <Bold size={16} />
         </button>
         <button
           onClick={() => handleOverride({ isItalic: !currentIsItalic })}
-          className={`flex-1 p-2 rounded-lg border flex justify-center items-center transition-colors ${currentIsItalic ? 'bg-sky-100 border-sky-300 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+          className={`flex-1 p-2 rounded-lg border flex justify-center items-center transition-colors cursor-pointer ${currentIsItalic ? 'bg-sky-100 border-sky-300 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
           title="Cursiva"
         >
           <Italic size={16} />
         </button>
       </div>
 
-      {/* Color & Size Row */}
       <div className="flex gap-3 items-center">
         <div className="flex-1">
           <label className="block text-[10px] font-semibold text-gray-500 mb-1">Color</label>
@@ -155,7 +169,6 @@ const TextPropertiesPanel: React.FC = () => {
             <span className="text-xs text-gray-600 font-mono uppercase">{currentFill}</span>
           </div>
         </div>
-
         <div className="flex-1">
           <label className="block text-[10px] font-semibold text-gray-500 mb-1">Tamaño</label>
           <input
@@ -164,30 +177,29 @@ const TextPropertiesPanel: React.FC = () => {
             onChange={(e) => handleOverride({ fontSize: Number(e.target.value) })}
             className="w-full text-sm p-1.5 border border-gray-200 rounded-md focus:ring-1 focus:ring-sky-400 outline-none"
             min={8}
-            max={120}
+            max={240}
           />
         </div>
       </div>
 
-      {/* Alignment */}
       <div>
         <label className="block text-[10px] font-semibold text-gray-500 mb-1">Alineación</label>
         <div className="flex bg-white rounded-lg border border-gray-200 overflow-hidden">
           <button
             onClick={() => handleOverride({ align: 'left' })}
-            className={`flex-1 p-1.5 flex justify-center hover:bg-gray-50 ${currentAlign === 'left' ? 'bg-sky-100 text-sky-700' : 'text-gray-500'}`}
+            className={`flex-1 p-1.5 flex justify-center hover:bg-gray-50 cursor-pointer ${currentAlign === 'left' ? 'bg-sky-100 text-sky-700' : 'text-gray-500'}`}
           >
             <AlignLeft size={16} />
           </button>
           <button
             onClick={() => handleOverride({ align: 'center' })}
-            className={`flex-1 p-1.5 border-x border-gray-200 flex justify-center hover:bg-gray-50 ${currentAlign === 'center' ? 'bg-sky-100 text-sky-700' : 'text-gray-500'}`}
+            className={`flex-1 p-1.5 border-x border-gray-200 flex justify-center hover:bg-gray-50 cursor-pointer ${currentAlign === 'center' ? 'bg-sky-100 text-sky-700' : 'text-gray-500'}`}
           >
             <AlignCenter size={16} />
           </button>
           <button
             onClick={() => handleOverride({ align: 'right' })}
-            className={`flex-1 p-1.5 flex justify-center hover:bg-gray-50 ${currentAlign === 'right' ? 'bg-sky-100 text-sky-700' : 'text-gray-500'}`}
+            className={`flex-1 p-1.5 flex justify-center hover:bg-gray-50 cursor-pointer ${currentAlign === 'right' ? 'bg-sky-100 text-sky-700' : 'text-gray-500'}`}
           >
             <AlignRight size={16} />
           </button>

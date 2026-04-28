@@ -6,17 +6,25 @@ const Background: React.FC = () => {
   const fondo_url = useEditorStore((s) => s.activeTemplate.fondo_url);
   const customBackgroundUrl = useEditorStore((s) => s.customBackgroundUrl);
   const bgOverlay = useEditorStore((s) => s.bgOverlay);
+  const canvas = useEditorStore((s) => s.canvasSize);
   const [image] = useImage(customBackgroundUrl || fondo_url);
 
   return (
     <>
-      <Image image={image} x={0} y={0} width={800} height={1200} listening={false} />
+      <Image
+        image={image}
+        x={0}
+        y={0}
+        width={canvas.width}
+        height={canvas.height}
+        listening={false}
+      />
       {bgOverlay.opacity > 0 && (
         <Rect
           x={0}
           y={0}
-          width={800}
-          height={1200}
+          width={canvas.width}
+          height={canvas.height}
           fill={bgOverlay.color}
           opacity={bgOverlay.opacity}
           listening={false}

@@ -1131,6 +1131,633 @@ const templateAtardecer: TemplateLayout = {
 };
 
 // ============================================================================
+// TEMPLATE 6: CRUZ ETERNA
+// White background with golden cross — classic Catholic feel
+// ============================================================================
+
+const BG_CRUZ_ETERNA = `data:image/svg+xml;utf8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1200">
+  <defs>
+    <linearGradient id="ce_bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fdfbf6;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#f3eede;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="ce_gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#bf953f;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#fcf6ba;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#aa771c;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="ce_line" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#bf953f;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#bf953f;stop-opacity:0.7"/>
+      <stop offset="100%" style="stop-color:#bf953f;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1200" fill="url(#ce_bg)"/>
+  <!-- Outer thin border -->
+  <rect x="30" y="30" width="740" height="1140" fill="none" stroke="#bf953f" stroke-width="0.6" opacity="0.4"/>
+  <rect x="42" y="42" width="716" height="1116" fill="none" stroke="#bf953f" stroke-width="0.3" opacity="0.3"/>
+  <!-- Top golden cross watermark -->
+  <g opacity="0.18">
+    <rect x="385" y="60" width="30" height="120" fill="url(#ce_gold)"/>
+    <rect x="345" y="90" width="110" height="30" fill="url(#ce_gold)"/>
+  </g>
+  <!-- Dividers -->
+  <line x1="120" y1="790" x2="680" y2="790" stroke="url(#ce_line)" stroke-width="1.2"/>
+  <line x1="120" y1="920" x2="680" y2="920" stroke="url(#ce_line)" stroke-width="1.2"/>
+  <!-- Decorative diamond on dividers -->
+  <rect x="395" y="785" width="10" height="10" fill="#bf953f" opacity="0.7" transform="rotate(45,400,790)"/>
+  <rect x="395" y="915" width="10" height="10" fill="#bf953f" opacity="0.7" transform="rotate(45,400,920)"/>
+  <!-- Bottom small cross -->
+  <g opacity="0.25" transform="translate(400,1110)">
+    <rect x="-3" y="-15" width="6" height="30" fill="#bf953f"/>
+    <rect x="-12" y="-6" width="24" height="6" fill="#bf953f"/>
+  </g>
+</svg>
+`)}`;
+
+const templateCruzEterna: TemplateLayout = {
+  id: 'tpl_cruz_eterna',
+  fondo_url: BG_CRUZ_ETERNA,
+  elementos_fijos: [
+    {
+      tipo: 'texto',
+      contenido: 'Descansa en Paz',
+      x: 0,
+      y: 200,
+      width: 800,
+      fontSize: 26,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#8b6914',
+      align: 'center',
+      fontStyle: 'italic',
+    },
+    {
+      tipo: 'texto',
+      contenido: 'VELATORIO',
+      x: 0,
+      y: 805,
+      width: 800,
+      fontSize: 16,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#bf953f',
+      align: 'center',
+    },
+    {
+      tipo: 'texto',
+      contenido: 'SEPELIO',
+      x: 0,
+      y: 935,
+      width: 800,
+      fontSize: 16,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#bf953f',
+      align: 'center',
+    },
+  ],
+  mapeo_dinamico: {
+    foto_difunto: { x: 250, y: 240, width: 300, height: 380, draggable: true },
+    nombres: {
+      x: 0,
+      y: 645,
+      width: 800,
+      fontSize: 44,
+      fontFamily: 'Playfair Display',
+      fill: '#1a1a1a',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    apellidos: {
+      x: 0,
+      y: 700,
+      width: 800,
+      fontSize: 44,
+      fontFamily: 'Playfair Display',
+      fill: '#1a1a1a',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    fechas: {
+      x: 0,
+      y: 760,
+      width: 800,
+      fontSize: 19,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#665544',
+      align: 'center',
+    },
+    velatorio_lugar: {
+      x: 0,
+      y: 838,
+      width: 800,
+      fontSize: 22,
+      fontFamily: 'Playfair Display',
+      fill: '#1a1a1a',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    velatorio_direccion: {
+      x: 0,
+      y: 875,
+      width: 800,
+      fontSize: 17,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#665544',
+      align: 'center',
+    },
+    sepelio_fecha_hora: {
+      x: 0,
+      y: 968,
+      width: 800,
+      fontSize: 22,
+      fontFamily: 'Playfair Display',
+      fill: '#1a1a1a',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    sepelio_lugar: {
+      x: 0,
+      y: 1005,
+      width: 800,
+      fontSize: 17,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#665544',
+      align: 'center',
+    },
+    frase_dedicatoria: {
+      x: 110,
+      y: 1055,
+      width: 580,
+      fontSize: 16,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#8b6914',
+      align: 'center',
+      fontStyle: 'italic',
+    },
+  },
+};
+
+// ============================================================================
+// TEMPLATE 7: MINIMAL MARFIL
+// Ultra-clean, beige/ivory tones, sans-serif modern
+// ============================================================================
+
+const BG_MINIMAL_MARFIL = `data:image/svg+xml;utf8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1200">
+  <rect width="800" height="1200" fill="#f5efe6"/>
+  <rect x="50" y="50" width="700" height="1100" fill="none" stroke="#5c5240" stroke-width="0.5" opacity="0.25"/>
+  <line x1="100" y1="780" x2="700" y2="780" stroke="#5c5240" stroke-width="0.4" opacity="0.5"/>
+  <line x1="100" y1="920" x2="700" y2="920" stroke="#5c5240" stroke-width="0.4" opacity="0.5"/>
+  <!-- Tiny circle accents -->
+  <circle cx="400" cy="780" r="2" fill="#5c5240" opacity="0.6"/>
+  <circle cx="400" cy="920" r="2" fill="#5c5240" opacity="0.6"/>
+  <!-- Top tiny serif marker -->
+  <line x1="385" y1="160" x2="415" y2="160" stroke="#5c5240" stroke-width="0.6"/>
+</svg>
+`)}`;
+
+const templateMinimalMarfil: TemplateLayout = {
+  id: 'tpl_minimal_marfil',
+  fondo_url: BG_MINIMAL_MARFIL,
+  elementos_fijos: [
+    {
+      tipo: 'texto',
+      contenido: 'IN MEMORIAM',
+      x: 0,
+      y: 100,
+      width: 800,
+      fontSize: 14,
+      fontFamily: 'Inter',
+      fill: '#5c5240',
+      align: 'center',
+    },
+    {
+      tipo: 'texto',
+      contenido: 'velatorio',
+      x: 0,
+      y: 800,
+      width: 800,
+      fontSize: 12,
+      fontFamily: 'Inter',
+      fill: '#7a6e58',
+      align: 'center',
+    },
+    {
+      tipo: 'texto',
+      contenido: 'sepelio',
+      x: 0,
+      y: 940,
+      width: 800,
+      fontSize: 12,
+      fontFamily: 'Inter',
+      fill: '#7a6e58',
+      align: 'center',
+    },
+  ],
+  mapeo_dinamico: {
+    foto_difunto: { x: 280, y: 200, width: 240, height: 320, draggable: true },
+    nombres: {
+      x: 0,
+      y: 560,
+      width: 800,
+      fontSize: 38,
+      fontFamily: 'Marcellus',
+      fill: '#2a2418',
+      align: 'center',
+    },
+    apellidos: {
+      x: 0,
+      y: 610,
+      width: 800,
+      fontSize: 38,
+      fontFamily: 'Marcellus',
+      fill: '#2a2418',
+      align: 'center',
+    },
+    fechas: {
+      x: 0,
+      y: 685,
+      width: 800,
+      fontSize: 16,
+      fontFamily: 'Inter',
+      fill: '#7a6e58',
+      align: 'center',
+    },
+    velatorio_lugar: {
+      x: 0,
+      y: 830,
+      width: 800,
+      fontSize: 20,
+      fontFamily: 'Marcellus',
+      fill: '#2a2418',
+      align: 'center',
+    },
+    velatorio_direccion: {
+      x: 0,
+      y: 865,
+      width: 800,
+      fontSize: 15,
+      fontFamily: 'Inter',
+      fill: '#7a6e58',
+      align: 'center',
+    },
+    sepelio_fecha_hora: {
+      x: 0,
+      y: 970,
+      width: 800,
+      fontSize: 20,
+      fontFamily: 'Marcellus',
+      fill: '#2a2418',
+      align: 'center',
+    },
+    sepelio_lugar: {
+      x: 0,
+      y: 1005,
+      width: 800,
+      fontSize: 15,
+      fontFamily: 'Inter',
+      fill: '#7a6e58',
+      align: 'center',
+    },
+    frase_dedicatoria: {
+      x: 130,
+      y: 1075,
+      width: 540,
+      fontSize: 14,
+      fontFamily: 'Inter',
+      fill: '#5c5240',
+      align: 'center',
+      fontStyle: 'italic',
+    },
+  },
+};
+
+// ============================================================================
+// TEMPLATE 8: NOCTURNO PROFUNDO
+// Deep black with silver/blue accents, modern feel
+// ============================================================================
+
+const BG_NOCTURNO = `data:image/svg+xml;utf8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1200">
+  <defs>
+    <radialGradient id="nc_bg" cx="50%" cy="40%" r="80%">
+      <stop offset="0%" style="stop-color:#1a1d2e;stop-opacity:1"/>
+      <stop offset="60%" style="stop-color:#0c0f1c;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#040611;stop-opacity:1"/>
+    </radialGradient>
+    <linearGradient id="nc_silver" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#bcc6e0;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#dde3f2;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#bcc6e0;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1200" fill="url(#nc_bg)"/>
+  <!-- Tiny stars -->
+  <g fill="#dde3f2">
+    <circle cx="120" cy="80" r="1" opacity="0.7"/>
+    <circle cx="650" cy="120" r="0.8" opacity="0.6"/>
+    <circle cx="260" cy="50" r="1" opacity="0.5"/>
+    <circle cx="490" cy="60" r="0.7" opacity="0.6"/>
+    <circle cx="710" cy="180" r="0.9" opacity="0.5"/>
+    <circle cx="80" cy="170" r="0.7" opacity="0.5"/>
+    <circle cx="380" cy="180" r="0.7" opacity="0.4"/>
+  </g>
+  <!-- Outer border -->
+  <rect x="30" y="30" width="740" height="1140" fill="none" stroke="#dde3f2" stroke-width="0.5" opacity="0.25"/>
+  <!-- Dividers -->
+  <line x1="100" y1="790" x2="700" y2="790" stroke="url(#nc_silver)" stroke-width="0.8"/>
+  <line x1="100" y1="930" x2="700" y2="930" stroke="url(#nc_silver)" stroke-width="0.8"/>
+  <!-- Bottom luminous accent -->
+  <rect x="0" y="1192" width="800" height="8" fill="url(#nc_silver)" opacity="0.6"/>
+</svg>
+`)}`;
+
+const templateNocturno: TemplateLayout = {
+  id: 'tpl_nocturno',
+  fondo_url: BG_NOCTURNO,
+  elementos_fijos: [
+    {
+      tipo: 'texto',
+      contenido: '— En memoria eterna —',
+      x: 0,
+      y: 220,
+      width: 800,
+      fontSize: 22,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#bcc6e0',
+      align: 'center',
+      fontStyle: 'italic',
+    },
+    {
+      tipo: 'texto',
+      contenido: 'VELATORIO',
+      x: 0,
+      y: 808,
+      width: 800,
+      fontSize: 14,
+      fontFamily: 'Inter',
+      fill: '#bcc6e0',
+      align: 'center',
+    },
+    {
+      tipo: 'texto',
+      contenido: 'SEPELIO',
+      x: 0,
+      y: 948,
+      width: 800,
+      fontSize: 14,
+      fontFamily: 'Inter',
+      fill: '#bcc6e0',
+      align: 'center',
+    },
+  ],
+  mapeo_dinamico: {
+    foto_difunto: { x: 250, y: 270, width: 300, height: 380, draggable: true },
+    nombres: {
+      x: 0,
+      y: 670,
+      width: 800,
+      fontSize: 44,
+      fontFamily: 'Playfair Display',
+      fill: '#f5f7ff',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    apellidos: {
+      x: 0,
+      y: 720,
+      width: 800,
+      fontSize: 44,
+      fontFamily: 'Playfair Display',
+      fill: '#f5f7ff',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    fechas: {
+      x: 0,
+      y: 765,
+      width: 800,
+      fontSize: 19,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#9aa6c4',
+      align: 'center',
+    },
+    velatorio_lugar: {
+      x: 0,
+      y: 845,
+      width: 800,
+      fontSize: 22,
+      fontFamily: 'Playfair Display',
+      fill: '#f5f7ff',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    velatorio_direccion: {
+      x: 0,
+      y: 880,
+      width: 800,
+      fontSize: 17,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#9aa6c4',
+      align: 'center',
+    },
+    sepelio_fecha_hora: {
+      x: 0,
+      y: 980,
+      width: 800,
+      fontSize: 22,
+      fontFamily: 'Playfair Display',
+      fill: '#f5f7ff',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    sepelio_lugar: {
+      x: 0,
+      y: 1015,
+      width: 800,
+      fontSize: 17,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#9aa6c4',
+      align: 'center',
+    },
+    frase_dedicatoria: {
+      x: 100,
+      y: 1075,
+      width: 600,
+      fontSize: 16,
+      fontFamily: 'Cormorant Garamond',
+      fill: '#bcc6e0',
+      align: 'center',
+      fontStyle: 'italic',
+    },
+  },
+};
+
+// ============================================================================
+// TEMPLATE 9: VINTAGE SEPIA
+// Aged sepia tones with vintage frame
+// ============================================================================
+
+const BG_VINTAGE = `data:image/svg+xml;utf8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1200">
+  <defs>
+    <radialGradient id="vt_bg" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" style="stop-color:#f6e8c8;stop-opacity:1"/>
+      <stop offset="60%" style="stop-color:#e6cda0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#c9a26a;stop-opacity:1"/>
+    </radialGradient>
+    <pattern id="vt_grain" width="3" height="3" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="0.3" fill="#3a2a14" opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="1200" fill="url(#vt_bg)"/>
+  <rect width="800" height="1200" fill="url(#vt_grain)"/>
+  <!-- Heavy ornate border -->
+  <rect x="22" y="22" width="756" height="1156" fill="none" stroke="#5c3d1c" stroke-width="3" opacity="0.45"/>
+  <rect x="34" y="34" width="732" height="1132" fill="none" stroke="#5c3d1c" stroke-width="0.8" opacity="0.5"/>
+  <rect x="42" y="42" width="716" height="1116" fill="none" stroke="#5c3d1c" stroke-width="0.4" opacity="0.4"/>
+  <!-- Corner ornaments -->
+  <g stroke="#5c3d1c" stroke-width="1" fill="none" opacity="0.55">
+    <path d="M 50,50 L 110,50 M 50,50 L 50,110 M 60,60 Q 90,60 90,90"/>
+    <path d="M 750,50 L 690,50 M 750,50 L 750,110 M 740,60 Q 710,60 710,90"/>
+    <path d="M 50,1150 L 110,1150 M 50,1150 L 50,1090 M 60,1140 Q 90,1140 90,1110"/>
+    <path d="M 750,1150 L 690,1150 M 750,1150 L 750,1090 M 740,1140 Q 710,1140 710,1110"/>
+  </g>
+  <!-- Aged divider lines -->
+  <line x1="120" y1="780" x2="680" y2="780" stroke="#5c3d1c" stroke-width="1.2" opacity="0.5"/>
+  <line x1="120" y1="920" x2="680" y2="920" stroke="#5c3d1c" stroke-width="1.2" opacity="0.5"/>
+  <!-- Vignette -->
+  <radialGradient id="vt_vignette" cx="50%" cy="50%" r="75%">
+    <stop offset="60%" style="stop-color:#000;stop-opacity:0"/>
+    <stop offset="100%" style="stop-color:#000;stop-opacity:0.25"/>
+  </radialGradient>
+  <rect width="800" height="1200" fill="url(#vt_vignette)"/>
+</svg>
+`)}`;
+
+const templateVintageSepia: TemplateLayout = {
+  id: 'tpl_vintage_sepia',
+  fondo_url: BG_VINTAGE,
+  elementos_fijos: [
+    {
+      tipo: 'texto',
+      contenido: '~ En Memoria de un Ser Querido ~',
+      x: 0,
+      y: 105,
+      width: 800,
+      fontSize: 26,
+      fontFamily: 'EB Garamond',
+      fill: '#3a2a14',
+      align: 'center',
+      fontStyle: 'italic',
+    },
+    {
+      tipo: 'texto',
+      contenido: 'V E L A T O R I O',
+      x: 0,
+      y: 800,
+      width: 800,
+      fontSize: 16,
+      fontFamily: 'EB Garamond',
+      fill: '#5c3d1c',
+      align: 'center',
+    },
+    {
+      tipo: 'texto',
+      contenido: 'S E P E L I O',
+      x: 0,
+      y: 940,
+      width: 800,
+      fontSize: 16,
+      fontFamily: 'EB Garamond',
+      fill: '#5c3d1c',
+      align: 'center',
+    },
+  ],
+  mapeo_dinamico: {
+    foto_difunto: { x: 240, y: 165, width: 320, height: 400, draggable: true },
+    nombres: {
+      x: 0,
+      y: 600,
+      width: 800,
+      fontSize: 44,
+      fontFamily: 'EB Garamond',
+      fill: '#2c1d0a',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    apellidos: {
+      x: 0,
+      y: 655,
+      width: 800,
+      fontSize: 44,
+      fontFamily: 'EB Garamond',
+      fill: '#2c1d0a',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    fechas: {
+      x: 0,
+      y: 730,
+      width: 800,
+      fontSize: 19,
+      fontFamily: 'EB Garamond',
+      fill: '#5c3d1c',
+      align: 'center',
+      fontStyle: 'italic',
+    },
+    velatorio_lugar: {
+      x: 0,
+      y: 833,
+      width: 800,
+      fontSize: 22,
+      fontFamily: 'EB Garamond',
+      fill: '#2c1d0a',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    velatorio_direccion: {
+      x: 0,
+      y: 870,
+      width: 800,
+      fontSize: 17,
+      fontFamily: 'EB Garamond',
+      fill: '#5c3d1c',
+      align: 'center',
+    },
+    sepelio_fecha_hora: {
+      x: 0,
+      y: 973,
+      width: 800,
+      fontSize: 22,
+      fontFamily: 'EB Garamond',
+      fill: '#2c1d0a',
+      align: 'center',
+      fontStyle: 'bold',
+    },
+    sepelio_lugar: {
+      x: 0,
+      y: 1010,
+      width: 800,
+      fontSize: 17,
+      fontFamily: 'EB Garamond',
+      fill: '#5c3d1c',
+      align: 'center',
+    },
+    frase_dedicatoria: {
+      x: 100,
+      y: 1070,
+      width: 600,
+      fontSize: 16,
+      fontFamily: 'EB Garamond',
+      fill: '#3a2a14',
+      align: 'center',
+      fontStyle: 'italic',
+    },
+  },
+};
+
+// ============================================================================
 // EXPORTS
 // ============================================================================
 
@@ -1140,6 +1767,10 @@ export const templates: TemplateLayout[] = [
   templateLuzDorada,
   templateSerenidad,
   templateAtardecer,
+  templateCruzEterna,
+  templateMinimalMarfil,
+  templateNocturno,
+  templateVintageSepia,
 ];
 
 export const templatesList: { id: string; name: string; preview_color: string }[] = [
@@ -1148,4 +1779,8 @@ export const templatesList: { id: string; name: string; preview_color: string }[
   { id: 'tpl_luz_dorada', name: 'Luz Dorada', preview_color: '#0f2b12' },
   { id: 'tpl_serenidad', name: 'Serenidad', preview_color: '#f2f2f2' },
   { id: 'tpl_atardecer', name: 'Atardecer', preview_color: '#7a2e3a' },
+  { id: 'tpl_cruz_eterna', name: 'Cruz Eterna', preview_color: '#f3eede' },
+  { id: 'tpl_minimal_marfil', name: 'Minimal Marfil', preview_color: '#f5efe6' },
+  { id: 'tpl_nocturno', name: 'Nocturno', preview_color: '#0c0f1c' },
+  { id: 'tpl_vintage_sepia', name: 'Vintage Sepia', preview_color: '#c9a26a' },
 ];

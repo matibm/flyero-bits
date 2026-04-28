@@ -5,10 +5,6 @@ import { toast } from 'sonner';
 import { useEditorStore } from '../../store/useEditorStore';
 import type { EditorStageHandle } from '../canvas/EditorStage';
 
-/** Canvas dimensions in pixels */
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 1200;
-
 type ExportFormat = 'jpg' | 'pdf';
 
 interface ExportButtonProps {
@@ -17,7 +13,8 @@ interface ExportButtonProps {
 
 const ExportButton: React.FC<ExportButtonProps> = ({ stageRef }) => {
   const data = useEditorStore((s) => s.deceasedData);
-  const setSelectedNodeId = useEditorStore((s) => s.setSelectedNodeId);
+  const canvas = useEditorStore((s) => s.canvasSize);
+  const setSelectedNodeIds = useEditorStore((s) => s.setSelectedNodeIds);
   const [exportingFormat, setExportingFormat] = useState<ExportFormat | null>(null);
 
   const buildFileName = useCallback(
@@ -29,10 +26,6 @@ const ExportButton: React.FC<ExportButtonProps> = ({ stageRef }) => {
     [data.nombres, data.apellidos],
   );
 
-  /**
-   * Captures the Konva stage as a high-resolution JPEG data URL.
-   * Deselects the active node first so transformer handles are hidden.
-   */
   const captureStage = useCallback(
     (): Promise<string> =>
       new Promise((resolve, reject) => {
@@ -41,16 +34,18 @@ const ExportButton: React.FC<ExportButtonProps> = ({ stageRef }) => {
           reject(new Error('Stage not available'));
           return;
         }
-
-        setSelectedNodeId(null);
+        setSelectedNodeIds([]);
 
         // Small delay to let React re-render without the transformer
         setTimeout(() => {
           try {
+            // Cap pixelRatio so very large canvases (A4 print) stay reasonable
+            const maxDim = Math.max(canvas.width, canvas.height);
+            const pixelRatio = maxDim >= 1920 ? 2 : 3;
             const uri = stage.toDataURL({
-              pixelRatio: 3,
+              pixelRatio,
               mimeType: 'image/jpeg',
-              quality: 0.9,
+              quality: 0.92,
             });
             resolve(uri);
           } catch (err) {
@@ -58,29 +53,24 @@ const ExportButton: React.FC<ExportButtonProps> = ({ stageRef }) => {
           }
         }, 150);
       }),
-    [stageRef, setSelectedNodeId],
+    [stageRef, setSelectedNodeIds, canvas.width, canvas.height],
   );
 
   const handleExportJPG = useCallback(async () => {
     if (exportingFormat) return;
     setExportingFormat('jpg');
-
     try {
       const uri = await captureStage();
-
       const link = document.createElement('a');
       link.download = buildFileName('jpg');
       link.href = uri;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
       toast.success('Flyer exportado como JPG.');
     } catch (err) {
       console.error('JPG export error:', err);
-      toast.error(
-        'Error al generar el archivo. Si subió una imagen externa, intente con una imagen local.',
-      );
+      toast.error('Error al generar el archivo.');
     } finally {
       setExportingFormat(null);
     }
@@ -89,41 +79,41 @@ const ExportButton: React.FC<ExportButtonProps> = ({ stageRef }) => {
   const handleExportPDF = useCallback(async () => {
     if (exportingFormat) return;
     setExportingFormat('pdf');
-
     try {
       const uri = await captureStage();
-
-      // Use the canvas aspect ratio (800x1200 = 2:3) to size the PDF.
-      // A4 width in mm is 210; height derived from the 2:3 ratio = 315 mm.
-      const pdfWidthMM = 210;
-      const pdfHeightMM = (CANVAS_HEIGHT / CANVAS_WIDTH) * pdfWidthMM;
-
+      // Map canvas pixels to mm preserving aspect ratio.
+      // Use 96 dpi → mm: 1 px = 0.2645833 mm. Cap width to 297mm (A4) for print sizes.
+      const ratio = canvas.height / canvas.width;
+      const pdfWidthMM = canvas.width >= 1240 ? 210 : 180;
+      const pdfHeightMM = pdfWidthMM * ratio;
+      const orientation = pdfWidthMM > pdfHeightMM ? 'landscape' : 'portrait';
       const pdf = new jsPDF({
-        orientation: 'portrait',
+        orientation,
         unit: 'mm',
         format: [pdfWidthMM, pdfHeightMM],
       });
-
       pdf.setProperties({
         title: `Obituario - ${data.nombres} ${data.apellidos}`,
         creator: 'Flyer Generator - Imperial',
       });
-
-      // Fill the entire page with the captured image
       pdf.addImage(uri, 'JPEG', 0, 0, pdfWidthMM, pdfHeightMM);
-
       pdf.save(buildFileName('pdf'));
-
       toast.success('Flyer exportado como PDF.');
     } catch (err) {
       console.error('PDF export error:', err);
-      toast.error(
-        'Error al generar el PDF. Si subió una imagen externa, intente con una imagen local.',
-      );
+      toast.error('Error al generar el PDF.');
     } finally {
       setExportingFormat(null);
     }
-  }, [captureStage, buildFileName, data.nombres, data.apellidos, exportingFormat]);
+  }, [
+    captureStage,
+    buildFileName,
+    data.nombres,
+    data.apellidos,
+    canvas.width,
+    canvas.height,
+    exportingFormat,
+  ]);
 
   const isExporting = exportingFormat !== null;
 
@@ -136,13 +126,11 @@ const ExportButton: React.FC<ExportButtonProps> = ({ stageRef }) => {
       >
         {exportingFormat === 'jpg' ? (
           <>
-            <Loader2 size={18} className="animate-spin" />
-            Exportando...
+            <Loader2 size={18} className="animate-spin" /> Exportando...
           </>
         ) : (
           <>
-            <FileImage size={18} />
-            JPG
+            <FileImage size={18} /> JPG
           </>
         )}
       </button>
@@ -153,13 +141,11 @@ const ExportButton: React.FC<ExportButtonProps> = ({ stageRef }) => {
       >
         {exportingFormat === 'pdf' ? (
           <>
-            <Loader2 size={18} className="animate-spin" />
-            Exportando...
+            <Loader2 size={18} className="animate-spin" /> Exportando...
           </>
         ) : (
           <>
-            <FileText size={18} />
-            PDF
+            <FileText size={18} /> PDF
           </>
         )}
       </button>
